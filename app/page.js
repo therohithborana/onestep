@@ -1,0 +1,45 @@
+import { SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
+import Link from 'next/link';
+
+export default function Home() {
+  return (
+    <main className="home-page min-h-screen flex flex-col items-center justify-center p-4 sm:p-8">
+      <div className="max-w-3xl w-full text-center">
+        <h1 className="text-4xl sm:text-6xl font-display font-bold mb-6 text-peach">OneStep</h1>
+        <p className="text-xl sm:text-2xl mb-8 text-white font-body">
+          Track your goals, one step at a time.
+        </p>
+        
+        <div className="prose max-w-2xl mx-auto mb-10 text-left font-body">
+          <p>
+            OneStep helps you build consistency by tracking your daily progress toward your goals.
+            With our beautiful heatmap visualization, you can see your progress at a glance and stay motivated.
+          </p>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+          <SignedIn>
+            <Link 
+              href="/dashboard" 
+              className="btn btn-primary text-lg px-8 py-3 font-body"
+            >
+              Go to Dashboard
+            </Link>
+          </SignedIn>
+          
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="btn btn-primary text-lg px-8 py-3 font-body">
+                Sign In
+              </button>
+            </SignInButton>
+            
+            
+          </SignedOut>
+        </div>
+        
+       
+      </div>
+    </main>
+  );
+} 

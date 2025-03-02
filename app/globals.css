@@ -1,0 +1,273 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Color palette from the image */
+  --navy: #111822;
+  --dark-gray: #333740;
+  --medium-gray: #6C6A6A;
+  --brown: #4F362A;
+  --taupe: #745850;
+  --peach: #F3B699;
+  
+  /* Dark theme variables */
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 17, 24, 34; /* Navy */
+  --card-bg: #1a2433; /* Slightly lighter than navy */
+  --card-border: #2a3545; /* Even lighter for borders */
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Only home page uses Playfair Display for headings */
+.home-page h1, 
+.home-page h2, 
+.home-page h3, 
+.home-page h4, 
+.home-page h5, 
+.home-page h6 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+}
+
+/* Other pages use Montserrat for headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 700;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Medium.com inspired text styles */
+.prose {
+  font-size: 1.25rem;
+  line-height: 1.7;
+  letter-spacing: -0.003em;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.prose h1 {
+  font-size: 2.5rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.prose h2 {
+  font-size: 1.75rem;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.015em;
+}
+
+/* Heatmap customization */
+.react-calendar-heatmap {
+  width: 100%;
+  height: auto;
+}
+
+.react-calendar-heatmap .color-empty {
+  fill: #1a2433; /* Dark background for empty cells */
+}
+
+/* Updated heatmap colors to match the color scheme */
+.react-calendar-heatmap .color-scale-1 { fill: #3cb371; } /* Peach */
+.react-calendar-heatmap .color-scale-2 { fill: #745850; } /* Taupe */
+.react-calendar-heatmap .color-scale-3 { fill: #4F362A; } /* Brown */
+.react-calendar-heatmap .color-scale-4 { fill: #333740; } /* Dark Gray */
+.react-calendar-heatmap .color-scale-5 { fill: #F3B699; } /* Peach again for highest value */
+
+.heatmap-container {
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+/* Button styles */
+.btn {
+  @apply px-4 py-2 rounded-md font-medium transition-colors;
+}
+
+.btn-primary {
+  background-color: var(--peach);
+  color: var(--navy);
+}
+
+.btn-primary:hover {
+  background-color: #e5a989;
+}
+
+.btn-secondary {
+  background-color: var(--dark-gray);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #444b54;
+}
+
+.btn-accent {
+  background-color: var(--peach);
+  color: var(--navy);
+}
+
+.btn-accent:hover {
+  background-color: #e5a989;
+}
+
+/* Card styles */
+.card {
+  @apply rounded-lg shadow-md p-6 border;
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+/* Dashboard heatmap styles */
+.react-calendar-heatmap .react-calendar-heatmap-month-labels {
+  font-size: 10px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  fill: rgba(255, 255, 255, 0.7);
+}
+
+.react-calendar-heatmap .react-calendar-heatmap-weekday-labels {
+  font-size: 9px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  fill: rgba(255, 255, 255, 0.7);
+}
+
+/* Make month view more compact */
+.react-calendar-heatmap rect {
+  rx: 1;
+  ry: 1;
+}
+
+/* Dashboard specific heatmap size adjustments */
+.dashboard-heatmap .react-calendar-heatmap {
+  height: 140px !important;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.dashboard-heatmap .react-calendar-heatmap rect {
+  width: 11px;
+  height: 11px;
+}
+
+.dashboard-heatmap .react-calendar-heatmap-month-label {
+  font-size: 10px;
+  font-weight: 500;
+  fill: rgba(255, 255, 255, 0.7);
+}
+
+.dashboard-heatmap .react-calendar-heatmap-weekday-label {
+  font-size: 9px;
+  fill: rgba(255, 255, 255, 0.7);
+}
+
+/* Remove the scaling that was making everything too small */
+.dashboard-heatmap .react-calendar-heatmap-all-weeks {
+  transform: none;
+}
+
+/* Custom aesthetic classes */
+.text-navy { color: var(--navy); }
+.text-dark-gray { color: var(--dark-gray); }
+.text-medium-gray { color: rgba(255, 255, 255, 0.6); }
+.text-brown { color: var(--brown); }
+.text-taupe { color: var(--taupe); }
+.text-peach { color: var(--peach); }
+.text-white { color: white; }
+
+.bg-navy { background-color: var(--navy); }
+.bg-dark-gray { background-color: var(--dark-gray); }
+.bg-medium-gray { background-color: var(--medium-gray); }
+.bg-brown { background-color: var(--brown); }
+.bg-taupe { background-color: var(--taupe); }
+.bg-peach { background-color: var(--peach); }
+
+/* Typography enhancements */
+.font-display {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.font-body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.font-heading {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Navbar styling */
+.navbar {
+  background-color: var(--navy);
+  color: white;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.navbar a {
+  color: white;
+  transition: color 0.2s ease;
+}
+
+.navbar a:hover {
+  color: var(--peach);
+}
+
+/* Form styling */
+input, select, textarea {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--card-border);
+  border-radius: 0.375rem;
+  color: white;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--peach);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(243, 182, 153, 0.3);
+}
+
+/* Custom button styles */
+.btn-delete {
+  background-color: #ef4444;
+  color: white;
+}
+
+.btn-delete:hover {
+  background-color: #dc2626;
+}
+
+/* Dark theme specific adjustments */
+.hover\:bg-neutral-50:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Tooltip styling for dark theme */
+[data-tooltip-id] {
+  color: white;
+}
+
+/* Link styling */
+a {
+  color: var(--peach);
+}
+
+a:hover {
+  color: #e5a989;
+}
