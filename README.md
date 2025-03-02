@@ -1,38 +1,51 @@
-# OneStep - Goal Tracking Application
+# OneStep - Track Your Goals
 
-OneStep is a minimalist web application for tracking your daily goals with a beautiful heatmap visualization similar to GitHub/LeetCode contribution graphs.
+OneStep is a web application that helps you build consistency by tracking your daily progress toward your goals. With beautiful heatmap visualizations, you can see your progress at a glance and stay motivated.
 
 ## Features
 
-- Google Sign-In with Clerk Authentication
-- Personalized dashboard for each user
-- Add and track multiple goals
-- Daily progress tracking with notes
-- Visual heatmap to monitor your consistency
-- Clean, aesthetic design inspired by Medium.com
+- **Goal Tracking**: Create and manage your personal goals
+- **Daily Progress**: Track your progress with a simple interface
+- **Progress Notes**: Add detailed notes about your daily progress
+- **Heatmap Visualization**: See your consistency at a glance with yearly heatmaps
+- **Statistics**: View detailed statistics about your goal completion rates
+- **Dark Theme**: Enjoy a beautiful dark-themed interface
 
-## Tech Stack
+## Technology Stack
 
-- Next.js (JavaScript)
-- Clerk Authentication
-- MongoDB (database)
-- TailwindCSS (styling)
-- React Calendar Heatmap
+- **Frontend**: Next.js, React, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Database**: MongoDB with Mongoose
+- **Authentication**: Clerk
+
+## Recent Updates
+
+- Added inline notes editing in the Today's Progress section
+- Implemented dark theme throughout the application
+- Updated font settings with Montserrat for headings and improved typography
+- Created a custom 404 page
+- Enhanced UI components with better contrast and visual appeal
 
 ## Getting Started
 
 1. Clone the repository
 2. Install dependencies with `npm install`
-3. Set up environment variables (see `.env.example`)
+3. Create a `.env.local` file with your Clerk and MongoDB credentials
 4. Run the development server with `npm run dev`
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Environment Variables
 
-Create a `.env.local` file in the root directory with the following variables:
+Create a `.env.local` file with the following variables:
 
 ```
+# Clerk Authentication
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 CLERK_SECRET_KEY=your_clerk_secret_key
+
+# MongoDB
 MONGODB_URI=your_mongodb_connection_string
-``` 
+```
+
+## License
+
+This project is licensed under the MIT License. 

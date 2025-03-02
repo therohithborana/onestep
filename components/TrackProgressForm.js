@@ -10,6 +10,7 @@ export default function TrackProgressForm({ goalId, initialDate }) {
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Set the initial date properly, handling timezone issues
   useEffect(() => {
@@ -22,6 +23,41 @@ export default function TrackProgressForm({ goalId, initialDate }) {
       setDate(today);
     }
   }, [initialDate]);
+  
+  // Fetch existing progress data when the date changes
+  useEffect(() => {
+    const fetchExistingProgress = async () => {
+      if (!date || !goalId) return;
+      
+      try {
+        setIsLoading(true);
+        const response = await fetch(`/api/progress?goalId=${goalId}&date=${date}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Existing progress data:', data);
+          
+          if (data && data.length > 0) {
+            const entry = data[0];
+            setCompleted(entry.completed);
+            setNotes(entry.notes || '');
+            console.log('Loaded existing progress:', entry);
+          } else {
+            // No existing entry for this date, reset form
+            setCompleted(true);
+            setNotes('');
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching existing progress:', err);
+        setError('Failed to load existing progress data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchExistingProgress();
+  }, [goalId, date]);
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,9 +98,9 @@ export default function TrackProgressForm({ goalId, initialDate }) {
   };
   
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="text-sm sm:text-base">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 sm:px-4 sm:py-3 rounded mb-4 text-sm">
           {error}
         </div>
       )}
@@ -79,54 +115,62 @@ export default function TrackProgressForm({ goalId, initialDate }) {
           name="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full px-2 py-1 sm:px-3 sm:py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm sm:text-base"
         />
       </div>
       
-      <div className="mb-4">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="completed"
-            name="completed"
-            checked={completed}
-            onChange={(e) => setCompleted(e.target.checked)}
-            className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
-          />
-          <label htmlFor="completed" className="ml-2 block text-sm text-neutral-700">
-            Mark as completed
-          </label>
+      {isLoading ? (
+        <div className="text-center py-3 sm:py-4 text-neutral-500 text-sm sm:text-base">
+          <p>Loading progress data...</p>
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="mb-4">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="completed"
+                name="completed"
+                checked={completed}
+                onChange={(e) => setCompleted(e.target.checked)}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+              />
+              <label htmlFor="completed" className="ml-2 block text-sm sm:text-base text-neutral-700">
+                Mark as completed
+              </label>
+            </div>
+          </div>
+          
+          <div className="mb-5 sm:mb-6">
+            <label htmlFor="notes" className="block text-sm font-medium text-neutral-700 mb-1">
+              Notes (Optional)
+            </label>
+            <textarea
+              id="notes"
+              name="notes"
+              rows="4"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="w-full px-2 py-1 sm:px-3 sm:py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm sm:text-base"
+              placeholder="What did you learn today? Any challenges or insights?"
+            ></textarea>
+          </div>
+        </>
+      )}
       
-      <div className="mb-6">
-        <label htmlFor="notes" className="block text-sm font-medium text-neutral-700 mb-1">
-          Notes (Optional)
-        </label>
-        <textarea
-          id="notes"
-          name="notes"
-          rows="4"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          className="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-          placeholder="What did you learn today? Any challenges or insights?"
-        ></textarea>
-      </div>
-      
-      <div className="flex justify-end">
+      <div className="flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-3">
         <button
           type="button"
           onClick={() => router.push(`/goals/${goalId}`)}
-          className="btn btn-secondary mr-2"
-          disabled={isSubmitting}
+          className="btn btn-secondary w-full sm:w-auto order-2 sm:order-1 text-sm sm:text-base"
+          disabled={isSubmitting || isLoading}
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="btn btn-primary"
-          disabled={isSubmitting}
+          className="btn btn-primary w-full sm:w-auto order-1 sm:order-2 text-sm sm:text-base"
+          disabled={isSubmitting || isLoading}
         >
           {isSubmitting ? 'Saving...' : 'Save Progress'}
         </button>

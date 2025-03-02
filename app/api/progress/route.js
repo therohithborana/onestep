@@ -71,8 +71,9 @@ export async function GET(request) {
     const goalId = url.searchParams.get('goalId');
     const startDate = url.searchParams.get('startDate');
     const endDate = url.searchParams.get('endDate');
+    const date = url.searchParams.get('date'); // Add support for specific date
     
-    console.log('GET /api/progress: Query parameters:', { goalId, startDate, endDate });
+    console.log('GET /api/progress: Query parameters:', { goalId, startDate, endDate, date });
     
     console.log('GET /api/progress: Connecting to database');
     await connectToDatabase();
@@ -81,10 +82,14 @@ export async function GET(request) {
     const query = { userId };
     
     if (goalId) {
-      query.goalId = new mongoose.Types.ObjectId(goalId);
+      query.goalId = goalId; // Don't convert to ObjectId as it might be a string already
     }
     
-    if (startDate && endDate) {
+    // If specific date is provided, use that instead of date range
+    if (date) {
+      query.date = date;
+      console.log('GET /api/progress: Filtering by specific date:', date);
+    } else if (startDate && endDate) {
       // Ensure dates are properly formatted for MongoDB query
       const start = new Date(startDate);
       start.setUTCHours(0, 0, 0, 0);

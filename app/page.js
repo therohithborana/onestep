@@ -12,8 +12,7 @@ export default function Home() {
         
         <div className="prose max-w-2xl mx-auto mb-10 text-left font-body">
           <p>
-            OneStep helps you build consistency by tracking your daily progress toward your goals.
-            With our beautiful heatmap visualization, you can see your progress at a glance and stay motivated.
+            Get it done. One step at a time.
           </p>
         </div>
         

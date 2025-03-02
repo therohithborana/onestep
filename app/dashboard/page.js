@@ -44,24 +44,24 @@ export default async function Dashboard() {
   const plainGoals = convertGoalsToPlainObjects(goals);
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-heading font-bold text-peach">Your Dashboard</h1>
-        <Link href="/goals/new" className="btn btn-primary font-body">
+    <main className="container mx-auto px-4 py-6 sm:py-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 gap-4">
+        <h1 className="text-2xl sm:text-3xl font-heading font-bold text-peach">Your Dashboard</h1>
+        <Link href="/goals/new" className="btn btn-primary font-body w-full sm:w-auto text-center">
           Add New Goal
         </Link>
       </div>
       
-      <div className="mb-8">
-        <h2 className="text-2xl font-heading font-bold mb-4 text-white">Welcome, {user.firstName || 'User'}</h2>
-        <p className="text-medium-gray font-body">
+      <div className="mb-6 sm:mb-8">
+        <h2 className="text-xl sm:text-2xl font-heading font-bold mb-3 sm:mb-4 text-white">Welcome, {user.firstName || 'User'}</h2>
+        <p className="text-medium-gray font-body text-sm sm:text-base">
           Track your progress and stay consistent with your goals.
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="mb-6 sm:mb-8">
         <div className="card border-t-4 border-t-peach">
-          <h3 className="text-xl font-heading font-bold mb-4 text-peach">Your Goals</h3>
+          <h3 className="text-lg sm:text-xl font-heading font-bold mb-3 sm:mb-4 text-peach">Your Goals</h3>
           {goals.length > 0 ? (
             <div className="space-y-3">
               {goals.map((goal) => (
@@ -79,7 +79,7 @@ export default async function Dashboard() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-medium-gray font-body">
+            <div className="text-center py-6 sm:py-8 text-medium-gray font-body">
               <p>You don't have any goals yet.</p>
               <Link href="/goals/new" className="text-peach hover:underline mt-2 inline-block">
                 Create your first goal
@@ -87,23 +87,15 @@ export default async function Dashboard() {
             </div>
           )}
         </div>
-        
-        <div className="card border-t-4 border-t-taupe">
-          <h3 className="text-xl font-heading font-bold mb-4 text-peach">Recent Activity</h3>
-          <div className="text-center py-8 text-medium-gray font-body">
-            <p>No recent activity to show.</p>
-            <p className="text-sm mt-2">
-              Your recent progress will appear here.
-            </p>
-          </div>
-        </div>
       </div>
       
-      <div className="card mb-8 p-4 border-t-4 border-t-brown">
-        <h3 className="text-xl font-heading font-bold mb-2 text-peach">Your Progress Heatmaps</h3>
+      <div className="card mb-6 sm:mb-8 p-3 sm:p-4 border-t-4 border-t-brown overflow-x-auto">
+        <h3 className="text-lg sm:text-xl font-heading font-bold mb-2 text-peach">Your Progress Heatmaps</h3>
         <p className="text-xs text-medium-gray mb-3 font-body">Yearly progress for all your goals</p>
         {goals.length > 0 ? (
-          <DashboardHeatmaps goals={plainGoals} />
+          <div className="min-w-[600px]">
+            <DashboardHeatmaps goals={plainGoals} />
+          </div>
         ) : (
           <div className="text-center py-6 text-medium-gray font-body">
             <p>Your progress heatmaps will appear here once you start tracking goals.</p>

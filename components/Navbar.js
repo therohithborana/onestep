@@ -3,12 +3,18 @@
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const isActive = (path) => {
     return pathname === path ? 'text-peach' : 'text-white hover:text-peach';
+  };
+  
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
   };
   
   return (
@@ -28,15 +34,27 @@ export default function Navbar() {
                 <Link href="/goals" className={`font-body transition-colors ${isActive('/goals')}`}>
                   Goals
                 </Link>
-                <Link href="/stats" className={`font-body transition-colors ${isActive('/stats')}`}>
-                  Statistics
-                </Link>
               </div>
             </SignedIn>
           </div>
           
           <div className="flex items-center">
             <SignedIn>
+              {/* Mobile menu button */}
+              <button 
+                className="md:hidden mr-4 text-white focus:outline-none"
+                onClick={toggleMobileMenu}
+                aria-label="Toggle mobile menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                  )}
+                </svg>
+              </button>
+              
               <UserButton 
                 afterSignOutUrl="/"
                 appearance={{
@@ -59,6 +77,30 @@ export default function Navbar() {
             </SignedOut>
           </div>
         </div>
+        
+        {/* Mobile menu */}
+        <SignedIn>
+          {mobileMenuOpen && (
+            <div className="md:hidden py-4 border-t border-gray-700">
+              <div className="flex flex-col space-y-4">
+                <Link 
+                  href="/dashboard" 
+                  className={`font-body transition-colors px-2 py-1 ${isActive('/dashboard')}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <Link 
+                  href="/goals" 
+                  className={`font-body transition-colors px-2 py-1 ${isActive('/goals')}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Goals
+                </Link>
+              </div>
+            </div>
+          )}
+        </SignedIn>
       </div>
     </nav>
   );

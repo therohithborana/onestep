@@ -5,12 +5,12 @@ import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 import { Tooltip } from 'react-tooltip';
 import { format, subDays, startOfYear, endOfYear } from 'date-fns';
+import 'react-tooltip/dist/react-tooltip.css';
 
-export default function GoalHeatmap({ goalId }) {
+export default function GoalHeatmap({ goalId, onDateSelect }) {
   const [progressData, setProgressData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [debugInfo, setDebugInfo] = useState(null);
   
   // Custom weekday labels
   const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -27,85 +27,55 @@ export default function GoalHeatmap({ goalId }) {
     const fetchProgressData = async () => {
       try {
         setLoading(true);
+        
         console.log('GoalHeatmap: Fetching progress data for goal:', goalId);
-        console.log('GoalHeatmap: Date range:', {
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString()
-        });
-        
-        const response = await fetch(
-          `/api/progress?goalId=${goalId}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
-        );
-        
-        console.log('GoalHeatmap: API response status:', response.status);
+        const response = await fetch(`/api/progress?goalId=${goalId}`);
         
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error('GoalHeatmap: API error response:', errorText);
-          throw new Error(`Failed to fetch progress data: ${errorText}`);
+          throw new Error(`Error fetching progress data: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('GoalHeatmap: Received data count:', data.length);
+        console.log('GoalHeatmap: Received progress data:', data.length, 'entries');
         
-        // Transform data for the heatmap
-        const formattedData = data.map(item => {
-          // Ensure we're using the correct date by parsing it properly
-          const dateObj = new Date(item.date);
-          const formattedDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
-          
-          return {
-            date: formattedDate,
-            count: item.completed ? 1 : 0,
-            notes: item.notes || '',
-          };
-        });
+        // Transform the data for the heatmap
+        const transformedData = data.map(entry => ({
+          date: entry.date,
+          count: entry.completed ? 1 : 0,
+          notes: entry.notes || '',
+        }));
         
-        console.log('GoalHeatmap: Formatted data for heatmap, count:', formattedData.length);
-        console.log('GoalHeatmap: Sample formatted data:', formattedData.slice(0, 2));
-        
-        setProgressData(formattedData);
-        setDebugInfo({
-          rawData: data,
-          formattedData: formattedData
-        });
+        setProgressData(transformedData);
       } catch (err) {
         console.error('Error fetching progress data:', err);
         setError(err.message);
-        setDebugInfo({
-          error: err.toString(),
-          stack: err.stack
-        });
       } finally {
         setLoading(false);
       }
     };
     
     if (goalId) {
-      console.log('GoalHeatmap: Effect triggered with goalId:', goalId);
       fetchProgressData();
-    } else {
-      console.error('GoalHeatmap: No goalId provided');
-      setError('No goal ID provided');
-      setLoading(false);
     }
-  }, [goalId, startDate, endDate]); // Include date dependencies
+  }, [goalId]);
   
+  // Function to generate tooltip content
   const getTooltipDataAttrs = (value) => {
     if (!value || !value.date) {
       return null;
     }
     
-    const date = format(new Date(value.date), 'MMM d, yyyy');
+    const date = new Date(value.date);
+    const formattedDate = format(date, 'MMM d, yyyy');
     const status = value.count > 0 ? 'Completed' : 'Not completed';
-    const notes = value.notes ? `Notes: ${value.notes}` : '';
     
     return {
       'data-tooltip-id': 'heatmap-tooltip',
-      'data-tooltip-content': `${date}: ${status}${notes ? `\n${notes}` : ''}`,
+      'data-tooltip-content': `${formattedDate}: ${status}${value.notes ? `\nNotes: ${value.notes}` : ''}`,
     };
   };
   
+  // Function to determine the color class based on the value
   const getClassForValue = (value) => {
     if (!value || value.count === 0) {
       return 'color-empty';
@@ -113,22 +83,29 @@ export default function GoalHeatmap({ goalId }) {
     return `color-scale-${value.count}`;
   };
   
+  // Handle click on a day
+  const handleDayClick = (value) => {
+    if (value && value.date && onDateSelect) {
+      console.log('GoalHeatmap: Day clicked:', value.date);
+      onDateSelect(value.date, value.notes);
+    }
+  };
+  
   if (loading) {
-    return <div className="text-center py-8">Loading heatmap...</div>;
+    return (
+      <div className="text-center py-8">
+        <div className="animate-pulse">
+          <div className="h-4 bg-neutral-200 rounded w-3/4 mx-auto mb-2.5"></div>
+          <div className="h-4 bg-neutral-200 rounded w-1/2 mx-auto"></div>
+        </div>
+      </div>
+    );
   }
   
   if (error) {
     return (
       <div className="text-center py-8">
         <div className="text-red-500 mb-4">Error: {error}</div>
-        {process.env.NODE_ENV === 'development' && debugInfo && (
-          <details className="text-left text-xs border p-2 rounded">
-            <summary className="cursor-pointer">Debug Information</summary>
-            <pre className="mt-2 overflow-auto max-h-40">
-              {JSON.stringify(debugInfo, null, 2)}
-            </pre>
-          </details>
-        )}
       </div>
     );
   }
@@ -154,20 +131,12 @@ export default function GoalHeatmap({ goalId }) {
         weekdayLabels={weekdayLabels}
         showMonthLabels={true}
         gutterSize={2}
+        onClick={handleDayClick}
         transformDayElement={(element, value, index) => {
           return element;
         }}
       />
       <Tooltip id="heatmap-tooltip" />
-      
-      {process.env.NODE_ENV === 'development' && debugInfo && (
-        <details className="text-left text-xs border p-2 rounded mt-4">
-          <summary className="cursor-pointer">Debug Information</summary>
-          <pre className="mt-2 overflow-auto max-h-40">
-            {JSON.stringify(debugInfo, null, 2)}
-          </pre>
-        </details>
-      )}
     </div>
   );
 } 
