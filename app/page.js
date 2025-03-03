@@ -11,9 +11,7 @@ export default function Home() {
         </p>
         
         <div className="prose max-w-2xl mx-auto mb-10 text-left font-body">
-          <p>
-            Get it done. One step at a time.
-          </p>
+         
         </div>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
