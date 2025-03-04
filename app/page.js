@@ -10,17 +10,7 @@ export default function Home() {
           Track your goals, one step at a time.
         </p>
 
-       <p>
-          Made with Jalebi&apos;s sweetness by{' '}
-          <a
-            href="https://www.linkedin.com/in/rohith-borana-b10778266/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold hover:underline text-yellow-500"
-          >
-            Rohith Borana
-          </a>
-        </p>
+       
         <div className="prose max-w-2xl mx-auto mb-10 text-left font-body">
          
         </div>
@@ -45,7 +35,17 @@ export default function Home() {
             
           </SignedOut>
         </div>
-        
+        <p>
+          Made with Jalebi&apos;s sweetness by{' '}
+          <a
+            href="https://www.linkedin.com/in/rohith-borana-b10778266/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold hover:underline text-yellow-500"
+          >
+            Rohith Borana
+          </a>
+        </p>
        
       </div>
     </main>
