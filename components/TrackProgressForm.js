@@ -1,12 +1,34 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Editor } from '@tinymce/tinymce-react';
+import dynamic from 'next/dynamic';
+import 'react-quill/dist/quill.snow.css';
+
+// Import Quill dynamically to avoid SSR issues
+const ReactQuill = dynamic(() => import('react-quill'), {
+  ssr: false,
+  loading: () => <p>Loading editor...</p>,
+});
+
+// Quill modules configuration
+const quillModules = {
+  toolbar: [
+    [{ 'header': [1, 2, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    ['clean']
+  ],
+};
+
+const quillFormats = [
+  'header',
+  'bold', 'italic', 'underline', 'strike',
+  'list', 'bullet'
+];
 
 export default function TrackProgressForm({ goalId, initialDate }) {
   const router = useRouter();
-  const editorRef = useRef(null);
   const [date, setDate] = useState('');
   const [completed, setCompleted] = useState(true);
   const [notes, setNotes] = useState('');
@@ -68,9 +90,6 @@ export default function TrackProgressForm({ goalId, initialDate }) {
       setIsSubmitting(true);
       setError(null);
       
-      // Get content from TinyMCE editor
-      const editorContent = editorRef.current ? editorRef.current.getContent() : notes;
-      
       console.log('TrackProgressForm: Submitting progress for date:', date);
       
       const response = await fetch('/api/progress', {
@@ -82,7 +101,7 @@ export default function TrackProgressForm({ goalId, initialDate }) {
           goalId,
           date,
           completed,
-          notes: editorContent,
+          notes,
         }),
       });
       
@@ -111,7 +130,7 @@ export default function TrackProgressForm({ goalId, initialDate }) {
       )}
       
       <div className="mb-4">
-        <label htmlFor="date" className="block text-sm font-medium text-neutral-700 mb-1">
+        <label htmlFor="date" className="block text-sm font-medium text-white mb-1">
           Date
         </label>
         <input
@@ -120,12 +139,12 @@ export default function TrackProgressForm({ goalId, initialDate }) {
           name="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-full px-2 py-1 sm:px-3 sm:py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm sm:text-base"
+          className="w-full px-2 py-1 sm:px-3 sm:py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-peach bg-navy text-white text-sm sm:text-base"
         />
       </div>
       
       {isLoading ? (
-        <div className="text-center py-3 sm:py-4 text-neutral-500 text-sm sm:text-base">
+        <div className="text-center py-3 sm:py-4 text-medium-gray text-sm sm:text-base">
           <p>Loading progress data...</p>
         </div>
       ) : (
@@ -138,40 +157,72 @@ export default function TrackProgressForm({ goalId, initialDate }) {
                 name="completed"
                 checked={completed}
                 onChange={(e) => setCompleted(e.target.checked)}
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                className="h-4 w-4 text-peach focus:ring-peach border-gray-700 rounded bg-navy"
               />
-              <label htmlFor="completed" className="ml-2 block text-sm sm:text-base text-neutral-700">
+              <label htmlFor="completed" className="ml-2 block text-sm sm:text-base text-white">
                 Mark as completed
               </label>
             </div>
           </div>
           
           <div className="mb-5 sm:mb-6">
-            <label htmlFor="notes" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="notes" className="block text-sm font-medium text-white mb-1">
               Notes
             </label>
-            <Editor
-              apiKey="fk5lvec7zyknaoe8bpuk01jmeqh0qhcuy8ulh0gf2oog0bmu"
-              onInit={(evt, editor) => editorRef.current = editor}
-              initialValue={notes}
-              init={{
-                height: 300,
-                menubar: false,
-                plugins: [
-                  'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                  'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                  'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount', 'checklist'
-                ],
-                toolbar: 'undo redo | blocks | ' +
-                  'bold italic forecolor | alignleft aligncenter ' +
-                  'alignright alignjustify | bullist numlist checklist outdent indent | ' +
-                  'removeformat | fontsize | help',
-                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                skin: 'oxide-dark',
-                content_css: 'dark',
-                placeholder: 'What did you learn today? Any challenges or insights?'
-              }}
-            />
+            <div className="quill-wrapper">
+              <ReactQuill
+                value={notes}
+                onChange={setNotes}
+                modules={quillModules}
+                formats={quillFormats}
+                theme="snow"
+                placeholder="What did you learn today? Any challenges or insights?"
+                className="bg-navy text-white rounded-md"
+              />
+            </div>
+            <style jsx global>{`
+              .quill-wrapper .ql-toolbar {
+                background-color: var(--navy);
+                border-color: #374151;
+                border-top-left-radius: 0.375rem;
+                border-top-right-radius: 0.375rem;
+              }
+              .quill-wrapper .ql-container {
+                background-color: var(--navy);
+                border-color: #374151;
+                border-bottom-left-radius: 0.375rem;
+                border-bottom-right-radius: 0.375rem;
+                min-height: 150px;
+              }
+              .quill-wrapper .ql-editor {
+                min-height: 150px;
+                font-family: var(--font-body);
+                font-size: 0.875rem;
+                line-height: 1.5;
+              }
+              .quill-wrapper .ql-toolbar .ql-stroke {
+                stroke: #9ca3af;
+              }
+              .quill-wrapper .ql-toolbar .ql-fill {
+                fill: #9ca3af;
+              }
+              .quill-wrapper .ql-toolbar button:hover .ql-stroke {
+                stroke: var(--peach);
+              }
+              .quill-wrapper .ql-toolbar button:hover .ql-fill {
+                fill: var(--peach);
+              }
+              .quill-wrapper .ql-toolbar button.ql-active .ql-stroke {
+                stroke: var(--peach);
+              }
+              .quill-wrapper .ql-toolbar button.ql-active .ql-fill {
+                fill: var(--peach);
+              }
+              .quill-wrapper .ql-editor.ql-blank::before {
+                color: #6b7280;
+                font-style: normal;
+              }
+            `}</style>
           </div>
         </>
       )}
