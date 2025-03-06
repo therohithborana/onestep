@@ -1,12 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import TodayProgressCard from './TodayProgressCard';
 import GoalHeatmap from './GoalHeatmap';
 
 export default function GoalProgressSection({ goalId }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedNotes, setSelectedNotes] = useState(null);
+  const searchParams = useSearchParams();
+  
+  // Update selectedDate when URL parameters change
+  useEffect(() => {
+    const dateParam = searchParams.get('date');
+    if (dateParam) {
+      setSelectedDate(dateParam);
+    } else {
+      setSelectedDate(null);
+    }
+  }, [searchParams]);
 
   const handleDateSelect = (date, notes) => {
     setSelectedDate(date);
@@ -21,7 +33,7 @@ export default function GoalProgressSection({ goalId }) {
         selectedNotes={selectedNotes} 
       />
       <div className="card overflow-x-auto">
-        <h2 className="text-lg sm:text-xl font-bold font-heading text-peach mb-3 sm:mb-4">Recent Activity</h2>
+        <h2 className="text-lg sm:text-xl font-bold font-heading text-peach mb-3 sm:mb-4">Progress Heatmap</h2>
         <div className="min-w-[600px]">
           <GoalHeatmap goalId={goalId} onDateSelect={handleDateSelect} />
         </div>

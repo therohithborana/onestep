@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { Editor } from '@tinymce/tinymce-react';
 
 export default function TrackProgressForm({ goalId, initialDate }) {
   const router = useRouter();
+  const editorRef = useRef(null);
   const [date, setDate] = useState('');
   const [completed, setCompleted] = useState(true);
   const [notes, setNotes] = useState('');
@@ -66,6 +68,9 @@ export default function TrackProgressForm({ goalId, initialDate }) {
       setIsSubmitting(true);
       setError(null);
       
+      // Get content from TinyMCE editor
+      const editorContent = editorRef.current ? editorRef.current.getContent() : notes;
+      
       console.log('TrackProgressForm: Submitting progress for date:', date);
       
       const response = await fetch('/api/progress', {
@@ -77,7 +82,7 @@ export default function TrackProgressForm({ goalId, initialDate }) {
           goalId,
           date,
           completed,
-          notes,
+          notes: editorContent,
         }),
       });
       
@@ -143,17 +148,30 @@ export default function TrackProgressForm({ goalId, initialDate }) {
           
           <div className="mb-5 sm:mb-6">
             <label htmlFor="notes" className="block text-sm font-medium text-neutral-700 mb-1">
-              Notes (Optional)
+              Notes
             </label>
-            <textarea
-              id="notes"
-              name="notes"
-              rows="4"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-2 py-1 sm:px-3 sm:py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm sm:text-base"
-              placeholder="What did you learn today? Any challenges or insights?"
-            ></textarea>
+            <Editor
+              apiKey="fk5lvec7zyknaoe8bpuk01jmeqh0qhcuy8ulh0gf2oog0bmu"
+              onInit={(evt, editor) => editorRef.current = editor}
+              initialValue={notes}
+              init={{
+                height: 300,
+                menubar: false,
+                plugins: [
+                  'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                  'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                  'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount', 'checklist'
+                ],
+                toolbar: 'undo redo | blocks | ' +
+                  'bold italic forecolor | alignleft aligncenter ' +
+                  'alignright alignjustify | bullist numlist checklist outdent indent | ' +
+                  'removeformat | fontsize | help',
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                skin: 'oxide-dark',
+                content_css: 'dark',
+                placeholder: 'What did you learn today? Any challenges or insights?'
+              }}
+            />
           </div>
         </>
       )}

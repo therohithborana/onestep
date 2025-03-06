@@ -2,7 +2,6 @@ import { currentUser } from '@clerk/nextjs/server';
 import Link from 'next/link';
 import connectToDatabase from '@/lib/mongodb';
 import Goal from '@/models/Goal';
-import RecentActivity from '@/components/RecentActivity';
 import GoalProgressSection from '@/components/GoalProgressSection';
 import mongoose from 'mongoose';
 
@@ -91,11 +90,6 @@ export default async function GoalPage({ params }) {
       </div>
       
       <GoalProgressSection goalId={params.id} />
-      
-      <div className="card">
-        <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 font-heading text-peach">Recent Activity</h2>
-        <RecentActivity goalId={params.id} />
-      </div>
     </main>
   );
 } 

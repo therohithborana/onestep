@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.2",
+    "@tailwindcss/typography": "^0.5.16",
+    "@tinymce/tinymce-react": "^6.0.0",
     "autoprefixer": "^10.4.16",
     "date-fns": "^2.30.0",
     "mongoose": "^8.0.3",

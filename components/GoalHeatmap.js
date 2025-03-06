@@ -23,6 +23,13 @@ export default function GoalHeatmap({ goalId, onDateSelect }) {
     };
   }, []); // Empty dependency array means this only runs once
   
+  // Function to strip HTML tags for tooltip display
+  const stripHtmlTags = (html) => {
+    if (!html) return '';
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || '';
+  };
+  
   useEffect(() => {
     const fetchProgressData = async () => {
       try {
@@ -43,6 +50,7 @@ export default function GoalHeatmap({ goalId, onDateSelect }) {
           date: entry.date,
           count: entry.completed ? 1 : 0,
           notes: entry.notes || '',
+          rawNotes: entry.notes || '', // Keep the raw notes for display in the component
         }));
         
         setProgressData(transformedData);
@@ -69,9 +77,14 @@ export default function GoalHeatmap({ goalId, onDateSelect }) {
     const formattedDate = format(date, 'MMM d, yyyy');
     const status = value.count > 0 ? 'Completed' : 'Not completed';
     
+    // Strip HTML tags for tooltip display
+    const plainTextNotes = stripHtmlTags(value.notes);
+    const notesPreview = plainTextNotes ? 
+      (plainTextNotes.length > 50 ? plainTextNotes.substring(0, 50) + '...' : plainTextNotes) : '';
+    
     return {
       'data-tooltip-id': 'heatmap-tooltip',
-      'data-tooltip-content': `${formattedDate}: ${status}${value.notes ? `\nNotes: ${value.notes}` : ''}`,
+      'data-tooltip-content': `${formattedDate}: ${status}${notesPreview ? `\nNotes: ${notesPreview}` : ''}`,
     };
   };
   
@@ -87,7 +100,7 @@ export default function GoalHeatmap({ goalId, onDateSelect }) {
   const handleDayClick = (value) => {
     if (value && value.date && onDateSelect) {
       console.log('GoalHeatmap: Day clicked:', value.date);
-      onDateSelect(value.date, value.notes);
+      onDateSelect(value.date, value.rawNotes || value.notes);
     }
   };
   

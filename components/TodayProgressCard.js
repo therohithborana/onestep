@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { format } from 'date-fns';
+import { format, addDays, subDays } from 'date-fns';
 
 export default function TodayProgressCard({ goalId, selectedDate, selectedNotes }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [todayEntry, setTodayEntry] = useState(null);
   const [displayDate, setDisplayDate] = useState(null);
+  const [currentDate, setCurrentDate] = useState(null);
   
   // Get today's date in YYYY-MM-DD format
   const getTodayDate = () => {
@@ -21,29 +23,34 @@ export default function TodayProgressCard({ goalId, selectedDate, selectedNotes 
   const today = getTodayDate();
   const dateToFetch = selectedDate || today;
   
-  // Format the display date
+  // Format the display date and update when date changes
   useEffect(() => {
     if (selectedDate) {
       // If it's a string, convert to Date object
       const dateObj = typeof selectedDate === 'string' ? new Date(selectedDate) : selectedDate;
       setDisplayDate(format(dateObj, 'MMMM d, yyyy'));
+      setCurrentDate(dateObj);
     } else {
       setDisplayDate('Today');
+      setCurrentDate(new Date());
     }
   }, [selectedDate]);
   
-  // Fetch progress entry for the selected date or today
+  // Fetch progress entry for the selected date
   useEffect(() => {
     const fetchProgressData = async () => {
+      if (!dateToFetch || !goalId) return;
+
       try {
         setLoading(true);
+        console.log('Fetching progress data for date:', dateToFetch);
+        
         const response = await fetch(`/api/progress?goalId=${goalId}&date=${dateToFetch}`);
         
         if (response.ok) {
           const data = await response.json();
-          console.log('Progress data for', dateToFetch, ':', data);
+          console.log('Progress data received:', data);
           
-          // Check if there's an entry for the date
           if (data && data.length > 0) {
             const entry = data[0];
             setTodayEntry(entry);
@@ -53,24 +60,72 @@ export default function TodayProgressCard({ goalId, selectedDate, selectedNotes 
         }
       } catch (err) {
         console.error('Error fetching progress data:', err);
+        setTodayEntry(null);
       } finally {
         setLoading(false);
       }
     };
-    
-    // If we have selectedNotes directly passed (from heatmap click), use that
-    if (selectedDate && selectedNotes !== undefined) {
-      setTodayEntry({
-        date: selectedDate,
-        notes: selectedNotes,
-        completed: true // Assume completed if we have notes
-      });
-      setLoading(false);
-    } else {
-      fetchProgressData();
-    }
-  }, [goalId, dateToFetch, selectedDate, selectedNotes]);
+
+    fetchProgressData();
+  }, [goalId, dateToFetch]);
   
+  // Handle navigation between days
+  const handlePreviousDay = async () => {
+    if (currentDate) {
+      const previousDate = subDays(currentDate, 1);
+      const formattedDate = format(previousDate, 'yyyy-MM-dd');
+      
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/progress?goalId=${goalId}&date=${formattedDate}`);
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+          setTodayEntry(data[0]);
+        } else {
+          setTodayEntry(null);
+        }
+        
+        router.replace(`/goals/${goalId}?date=${formattedDate}`, { scroll: false });
+        setDisplayDate(format(previousDate, 'MMMM d, yyyy'));
+        setCurrentDate(previousDate);
+      } catch (err) {
+        console.error('Error fetching previous day data:', err);
+        setTodayEntry(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleNextDay = async () => {
+    if (currentDate) {
+      const nextDate = addDays(currentDate, 1);
+      const formattedDate = format(nextDate, 'yyyy-MM-dd');
+      
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/progress?goalId=${goalId}&date=${formattedDate}`);
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+          setTodayEntry(data[0]);
+        } else {
+          setTodayEntry(null);
+        }
+        
+        router.replace(`/goals/${goalId}?date=${formattedDate}`, { scroll: false });
+        setDisplayDate(format(nextDate, 'MMMM d, yyyy'));
+        setCurrentDate(nextDate);
+      } catch (err) {
+        console.error('Error fetching next day data:', err);
+        setTodayEntry(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="card mb-6 sm:mb-8">
@@ -87,9 +142,31 @@ export default function TodayProgressCard({ goalId, selectedDate, selectedNotes 
   return (
     <div className="card mb-6 sm:mb-8">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 gap-3">
-        <h2 className="text-lg sm:text-xl font-bold font-heading text-peach">
-          {displayDate === 'Today' ? "Today's Progress" : `Progress for ${displayDate}`}
-        </h2>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePreviousDay}
+              className="p-2 hover:bg-gray-700 rounded-full transition-colors"
+              aria-label="Previous day"
+            >
+              <svg className="w-5 h-5 text-peach" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <h2 className="text-lg sm:text-xl font-bold font-heading text-peach">
+              {displayDate === 'Today' ? "Today's Progress" : `Progress for ${displayDate}`}
+            </h2>
+            <button
+              onClick={handleNextDay}
+              className="p-2 hover:bg-gray-700 rounded-full transition-colors"
+              aria-label="Next day"
+            >
+              <svg className="w-5 h-5 text-peach" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
         <div className="flex items-center">
           {todayEntry ? (
             <div className="flex items-center">
@@ -120,9 +197,10 @@ export default function TodayProgressCard({ goalId, selectedDate, selectedNotes 
                 {displayDate === 'Today' ? "Today's Notes:" : `Notes for ${displayDate}:`}
               </h3>
               <div className="p-2 sm:p-3 border border-gray-700 rounded-lg bg-navy text-white font-body">
-                {todayEntry.notes.split('\n').map((line, i) => (
-                  <p key={i} className="mb-1 text-sm sm:text-base">{line}</p>
-                ))}
+                <div 
+                  className="prose prose-sm sm:prose max-w-none prose-invert"
+                  dangerouslySetInnerHTML={{ __html: todayEntry.notes }}
+                />
               </div>
             </div>
           ) : (
@@ -152,7 +230,7 @@ export default function TodayProgressCard({ goalId, selectedDate, selectedNotes 
       {selectedDate && (
         <div className="flex justify-start mt-4">
           <button 
-            onClick={() => router.refresh()}
+            onClick={() => router.push(`/goals/${goalId}`)}
             className="text-peach hover:underline font-body flex items-center text-sm sm:text-base"
           >
             <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

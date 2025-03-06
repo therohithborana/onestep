@@ -87,8 +87,24 @@ export async function GET(request) {
     
     // If specific date is provided, use that instead of date range
     if (date) {
-      query.date = date;
-      console.log('GET /api/progress: Filtering by specific date:', date);
+      // Convert the date string to a Date object and set to midnight UTC
+      const dateObj = new Date(date);
+      const startOfDay = new Date(dateObj);
+      startOfDay.setHours(0, 0, 0, 0);
+      
+      const endOfDay = new Date(dateObj);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      query.date = {
+        $gte: startOfDay,
+        $lte: endOfDay
+      };
+      
+      console.log('GET /api/progress: Filtering by specific date:', {
+        date,
+        startOfDay: startOfDay.toISOString(),
+        endOfDay: endOfDay.toISOString()
+      });
     } else if (startDate && endDate) {
       // Ensure dates are properly formatted for MongoDB query
       const start = new Date(startDate);

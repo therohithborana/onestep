@@ -20,6 +20,14 @@ export default function DashboardHeatmaps({ goals }) {
   // Custom weekday labels
   const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   
+  // Function to strip HTML tags for tooltip display
+  const stripHtmlTags = (html) => {
+    if (!html) return '';
+    if (typeof window === 'undefined') return html.replace(/<[^>]*>?/gm, '');
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || '';
+  };
+  
   useEffect(() => {
     const fetchAllGoalsProgress = async () => {
       if (!goals || goals.length === 0) {
@@ -66,7 +74,7 @@ export default function DashboardHeatmaps({ goals }) {
               });
               
               // Calculate completion percentage for the current year
-              const daysInYear = 365 + (new Date(today.getFullYear(), 1, 29).getDate() === 29 ? 1 : 0); // Account for leap years
+              const daysInYear = 365 + (new Date(today.getFullYear(), 1, 29).getDate() === 29 ? 1 : 0);
               const completedDays = formattedData.filter(d => d.count > 0).length;
               const completionPercentage = daysInYear > 0 
                 ? Math.round((completedDays / daysInYear) * 100) 
@@ -111,11 +119,15 @@ export default function DashboardHeatmaps({ goals }) {
     
     const date = format(new Date(value.date), 'MMM d, yyyy');
     const status = value.count > 0 ? 'Completed' : 'Not completed';
-    const notes = value.notes ? `Notes: ${value.notes}` : '';
+    
+    // Strip HTML tags for tooltip display
+    const plainTextNotes = stripHtmlTags(value.notes);
+    const notesPreview = plainTextNotes ? 
+      (plainTextNotes.length > 50 ? plainTextNotes.substring(0, 50) + '...' : plainTextNotes) : '';
     
     return {
       'data-tooltip-id': 'dashboard-heatmap-tooltip',
-      'data-tooltip-content': `${date}: ${status}${notes ? `\n${notes}` : ''}`,
+      'data-tooltip-content': `${date}: ${status}${notesPreview ? `\nNotes: ${notesPreview}` : ''}`,
     };
   };
   

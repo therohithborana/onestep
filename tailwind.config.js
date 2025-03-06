@@ -1,9 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -14,12 +14,12 @@ module.exports = {
         body: ['Inter', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
       },
       colors: {
-        navy: '#111822',
-        'dark-gray': '#333740',
-        'medium-gray': '#6C6A6A',
-        brown: '#4F362A',
-        taupe: '#745850',
-        peach: '#F3B699',
+        'navy': 'var(--navy)',
+        'dark-gray': 'var(--dark-gray)',
+        'medium-gray': 'var(--medium-gray)',
+        'brown': 'var(--brown)',
+        'taupe': 'var(--taupe)',
+        'peach': 'var(--peach)',
         primary: {
           50: '#f0f9ff',
           100: '#e0f2fe',
@@ -45,7 +45,49 @@ module.exports = {
           900: '#171717',
         },
       },
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+            color: theme('colors.white'),
+            a: {
+              color: theme('colors.peach'),
+              '&:hover': {
+                color: theme('colors.peach'),
+                textDecoration: 'underline',
+              },
+            },
+            h1: {
+              color: theme('colors.white'),
+            },
+            h2: {
+              color: theme('colors.white'),
+            },
+            h3: {
+              color: theme('colors.white'),
+            },
+            h4: {
+              color: theme('colors.white'),
+            },
+            strong: {
+              color: theme('colors.white'),
+            },
+            code: {
+              color: theme('colors.white'),
+            },
+            blockquote: {
+              color: theme('colors.white'),
+            },
+          },
+        },
+        invert: {
+          css: {
+            color: theme('colors.white'),
+          },
+        },
+      }),
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 } 
