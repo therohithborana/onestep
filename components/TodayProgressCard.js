@@ -8,55 +8,32 @@ import { format, addDays, subDays } from 'date-fns';
 export default function TodayProgressCard({ goalId, selectedDate, selectedNotes }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [todayEntry, setTodayEntry] = useState(null);
-  const [displayDate, setDisplayDate] = useState(null);
-  const [currentDate, setCurrentDate] = useState(null);
   
   // Get today's date in YYYY-MM-DD format
   const getTodayDate = () => {
     const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    return format(now, 'yyyy-MM-dd');
   };
   
-  // Use selected date or today's date
-  const today = getTodayDate();
-  const dateToFetch = selectedDate || today;
+  // Get the current display date from URL or default to today
+  const currentDate = selectedDate ? new Date(selectedDate) : new Date();
+  const displayDate = selectedDate ? format(new Date(selectedDate), 'MMMM d, yyyy') : 'Today';
   
-  // Format the display date and update when date changes
-  useEffect(() => {
-    if (selectedDate) {
-      // If it's a string, convert to Date object
-      const dateObj = typeof selectedDate === 'string' ? new Date(selectedDate) : selectedDate;
-      setDisplayDate(format(dateObj, 'MMMM d, yyyy'));
-      setCurrentDate(dateObj);
-    } else {
-      setDisplayDate('Today');
-      setCurrentDate(new Date());
-    }
-  }, [selectedDate]);
-  
-  // Fetch progress entry for the selected date
+  // Fetch progress entry when date changes
   useEffect(() => {
     const fetchProgressData = async () => {
-      if (!dateToFetch || !goalId) return;
-
+      if (!goalId) return;
+      
+      const dateToFetch = selectedDate || getTodayDate();
+      setLoading(true);
+      
       try {
-        setLoading(true);
-        console.log('Fetching progress data for date:', dateToFetch);
-        
         const response = await fetch(`/api/progress?goalId=${goalId}&date=${dateToFetch}`);
-        
         if (response.ok) {
           const data = await response.json();
-          console.log('Progress data received:', data);
-          
-          if (data && data.length > 0) {
-            const entry = data[0];
-            setTodayEntry(entry);
-          } else {
-            setTodayEntry(null);
-          }
+          setTodayEntry(data && data.length > 0 ? data[0] : null);
         }
       } catch (err) {
         console.error('Error fetching progress data:', err);
@@ -67,74 +44,30 @@ export default function TodayProgressCard({ goalId, selectedDate, selectedNotes 
     };
 
     fetchProgressData();
-  }, [goalId, dateToFetch]);
+  }, [goalId, selectedDate]);
   
   // Handle navigation between days
-  const handlePreviousDay = async () => {
-    if (currentDate) {
-      const previousDate = subDays(currentDate, 1);
-      const formattedDate = format(previousDate, 'yyyy-MM-dd');
-      
-      try {
-        setLoading(true);
-        const response = await fetch(`/api/progress?goalId=${goalId}&date=${formattedDate}`);
-        const data = await response.json();
-        
-        if (data && data.length > 0) {
-          setTodayEntry(data[0]);
-        } else {
-          setTodayEntry(null);
-        }
-        
-        router.replace(`/goals/${goalId}?date=${formattedDate}`, { scroll: false });
-        setDisplayDate(format(previousDate, 'MMMM d, yyyy'));
-        setCurrentDate(previousDate);
-      } catch (err) {
-        console.error('Error fetching previous day data:', err);
-        setTodayEntry(null);
-      } finally {
-        setLoading(false);
-      }
-    }
+  const handlePreviousDay = () => {
+    const previousDate = subDays(currentDate, 1);
+    const formattedDate = format(previousDate, 'yyyy-MM-dd');
+    router.replace(`/goals/${goalId}?date=${formattedDate}`, { scroll: false });
   };
 
-  const handleNextDay = async () => {
-    if (currentDate) {
-      const nextDate = addDays(currentDate, 1);
-      const formattedDate = format(nextDate, 'yyyy-MM-dd');
-      
-      try {
-        setLoading(true);
-        const response = await fetch(`/api/progress?goalId=${goalId}&date=${formattedDate}`);
-        const data = await response.json();
-        
-        if (data && data.length > 0) {
-          setTodayEntry(data[0]);
-        } else {
-          setTodayEntry(null);
-        }
-        
-        router.replace(`/goals/${goalId}?date=${formattedDate}`, { scroll: false });
-        setDisplayDate(format(nextDate, 'MMMM d, yyyy'));
-        setCurrentDate(nextDate);
-      } catch (err) {
-        console.error('Error fetching next day data:', err);
-        setTodayEntry(null);
-      } finally {
-        setLoading(false);
-      }
-    }
+  const handleNextDay = () => {
+    const nextDate = addDays(currentDate, 1);
+    const formattedDate = format(nextDate, 'yyyy-MM-dd');
+    router.replace(`/goals/${goalId}?date=${formattedDate}`, { scroll: false });
   };
 
   if (loading) {
     return (
       <div className="card mb-6 sm:mb-8">
         <div className="flex justify-between items-center mb-4 sm:mb-6">
-          <h2 className="text-lg sm:text-xl font-bold font-heading text-peach">
+          <h2 className="text-lg sm:text-xl font-bold font-heading text-[var(--accent)]">
             {displayDate === 'Today' ? "Today's Progress" : `Progress for ${displayDate}`}
           </h2>
         </div>
-        <p className="text-medium-gray font-body mb-4 text-sm sm:text-base">Loading...</p>
+        <p className="text-text-secondary font-body mb-4 text-sm sm:text-base">Loading...</p>
       </div>
     );
   }
@@ -146,22 +79,22 @@ export default function TodayProgressCard({ goalId, selectedDate, selectedNotes 
           <div className="flex items-center gap-2">
             <button
               onClick={handlePreviousDay}
-              className="p-2 hover:bg-gray-700 rounded-full transition-colors"
+              className="p-2 hover:bg-[var(--accent)] hover:bg-opacity-5 rounded-full transition-colors"
               aria-label="Previous day"
             >
-              <svg className="w-5 h-5 text-peach" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <h2 className="text-lg sm:text-xl font-bold font-heading text-peach">
+            <h2 className="text-lg sm:text-xl font-bold font-heading text-[var(--accent)]">
               {displayDate === 'Today' ? "Today's Progress" : `Progress for ${displayDate}`}
             </h2>
             <button
               onClick={handleNextDay}
-              className="p-2 hover:bg-gray-700 rounded-full transition-colors"
+              className="p-2 hover:bg-[var(--accent)] hover:bg-opacity-5 rounded-full transition-colors"
               aria-label="Next day"
             >
-              <svg className="w-5 h-5 text-peach" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -178,7 +111,7 @@ export default function TodayProgressCard({ goalId, selectedDate, selectedNotes 
                   Completed
                 </span>
               ) : (
-                <span className="text-medium-gray font-body text-sm sm:text-base">Not completed</span>
+                <span className="text-text-secondary font-body text-sm sm:text-base">Not completed</span>
               )}
             </div>
           ) : (
@@ -193,10 +126,10 @@ export default function TodayProgressCard({ goalId, selectedDate, selectedNotes 
         <div>
           {todayEntry.notes ? (
             <div className="mb-4">
-              <h3 className="text-white font-body mb-2 font-medium text-sm sm:text-base">
+              <h3 className="text-text-primary font-body mb-2 font-medium text-sm sm:text-base">
                 {displayDate === 'Today' ? "Today's Notes:" : `Notes for ${displayDate}:`}
               </h3>
-              <div className="p-2 sm:p-3 border border-gray-700 rounded-lg bg-navy text-white font-body">
+              <div className="p-2 sm:p-3 border border-[var(--card-border)] rounded-lg bg-[var(--card-bg)] text-text-primary font-body">
                 <div 
                   className="prose prose-sm sm:prose max-w-none prose-invert"
                   dangerouslySetInnerHTML={{ __html: todayEntry.notes }}
@@ -204,24 +137,24 @@ export default function TodayProgressCard({ goalId, selectedDate, selectedNotes 
               </div>
             </div>
           ) : (
-            <p className="text-medium-gray font-body mb-4 text-sm sm:text-base">
+            <p className="text-text-secondary font-body mb-4 text-sm sm:text-base">
               No notes added for {displayDate === 'Today' ? 'today' : 'this day'}. 
-              <Link href={`/goals/${goalId}/track${selectedDate ? `?date=${selectedDate}` : ''}`} className="text-peach hover:underline ml-1">
+              <Link href={`/goals/${goalId}/track${selectedDate ? `?date=${selectedDate}` : ''}`} className="text-[var(--accent)] hover:underline ml-1">
                 Add notes
               </Link>
             </p>
           )}
           
           <div className="flex justify-end mt-4">
-            <Link href={`/goals/${goalId}/track${selectedDate ? `?date=${selectedDate}` : ''}`} className="text-peach hover:underline font-body text-sm sm:text-base">
+            <Link href={`/goals/${goalId}/track${selectedDate ? `?date=${selectedDate}` : ''}`} className="text-[var(--accent)] hover:underline font-body text-sm sm:text-base">
               Edit progress
             </Link>
           </div>
         </div>
       ) : (
-        <p className="text-medium-gray font-body mb-4 text-sm sm:text-base">
+        <p className="text-text-secondary font-body mb-4 text-sm sm:text-base">
           No progress tracked for {displayDate === 'Today' ? 'today' : 'this day'} yet. 
-          <Link href={`/goals/${goalId}/track${selectedDate ? `?date=${selectedDate}` : ''}`} className="text-peach hover:underline ml-1">
+          <Link href={`/goals/${goalId}/track${selectedDate ? `?date=${selectedDate}` : ''}`} className="text-[var(--accent)] hover:underline ml-1">
             Track progress
           </Link>
         </p>
@@ -231,7 +164,7 @@ export default function TodayProgressCard({ goalId, selectedDate, selectedNotes 
         <div className="flex justify-start mt-4">
           <button 
             onClick={() => router.push(`/goals/${goalId}`)}
-            className="text-peach hover:underline font-body flex items-center text-sm sm:text-base"
+            className="text-[var(--accent)] hover:underline font-body flex items-center text-sm sm:text-base"
           >
             <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>

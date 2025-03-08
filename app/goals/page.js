@@ -9,8 +9,8 @@ export default async function GoalsIndexPage() {
   if (!user) {
     return (
       <div className="text-center py-10">
-        <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
-        <p className="mb-4">You need to be signed in to view your goals.</p>
+        <h1 className="text-2xl font-bold mb-4 text-text-primary">Please Sign In</h1>
+        <p className="mb-4 text-text-secondary">You need to be signed in to view your goals.</p>
       </div>
     );
   }
@@ -20,16 +20,16 @@ export default async function GoalsIndexPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Your Goals</h1>
+        <h1 className="text-3xl font-bold font-heading text-[var(--accent)]">Your Goals</h1>
         <Link href="/goals/new" className="btn btn-primary">
           Create New Goal
         </Link>
       </div>
       
       {goals.length === 0 ? (
-        <div className="text-center py-10 bg-white rounded-lg shadow-sm">
-          <h2 className="text-xl font-semibold mb-2">No Goals Yet</h2>
-          <p className="text-neutral-600 mb-6">
+        <div className="text-center py-10 card">
+          <h2 className="text-xl font-semibold mb-2 text-text-primary">No Goals Yet</h2>
+          <p className="text-text-secondary mb-6">
             Create your first goal to start tracking your progress.
           </p>
           <Link href="/goals/new" className="btn btn-primary">
@@ -42,14 +42,15 @@ export default async function GoalsIndexPage() {
             <Link 
               key={goal._id} 
               href={`/goals/${goal._id}`}
-              className="block bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+              className="card hover:bg-[var(--accent)] hover:bg-opacity-5 transition-all border-t-4"
+              style={{ borderColor: goal.color || 'var(--accent)' }}
             >
-              <div className="p-6 border-t-4" style={{ borderColor: goal.color || '#0ea5e9' }}>
-                <h2 className="text-xl font-semibold mb-2">{goal.title}</h2>
+              <div className="p-6">
+                <h2 className="text-xl font-semibold mb-2 text-text-primary">{goal.title}</h2>
                 {goal.description && (
-                  <p className="text-neutral-600 mb-4 line-clamp-2">{goal.description}</p>
+                  <p className="text-text-secondary mb-4 line-clamp-2">{goal.description}</p>
                 )}
-                <div className="text-sm text-neutral-500">
+                <div className="text-sm text-text-secondary">
                   Created: {new Date(goal.createdAt).toLocaleDateString()}
                 </div>
               </div>

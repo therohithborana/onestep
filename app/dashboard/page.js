@@ -46,42 +46,42 @@ export default async function Dashboard() {
   return (
     <main className="container mx-auto px-4 py-6 sm:py-8">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 gap-4">
-        <h1 className="text-2xl sm:text-3xl font-heading font-bold text-peach">Your Dashboard</h1>
+        <h1 className="text-2xl sm:text-3xl font-heading font-bold text-[var(--accent)]">Your Dashboard</h1>
         <Link href="/goals/new" className="btn btn-primary font-body w-full sm:w-auto text-center">
           Add New Goal
         </Link>
       </div>
       
       <div className="mb-6 sm:mb-8">
-        <h2 className="text-xl sm:text-2xl font-heading font-bold mb-3 sm:mb-4 text-white">Welcome, {user.firstName || 'User'}</h2>
-        <p className="text-medium-gray font-body text-sm sm:text-base">
+        <h2 className="text-xl sm:text-2xl font-heading font-bold mb-3 sm:mb-4 text-text-primary">Welcome, {user.firstName || 'User'}</h2>
+        <p className="text-text-secondary font-body text-sm sm:text-base">
           Track your progress and stay consistent with your goals.
         </p>
       </div>
       
       <div className="mb-6 sm:mb-8">
-        <div className="card border-t-4 border-t-peach">
-          <h3 className="text-lg sm:text-xl font-heading font-bold mb-3 sm:mb-4 text-peach">Your Goals</h3>
+        <div className="card border-t-4 border-t-[var(--accent)]">
+          <h3 className="text-lg sm:text-xl font-heading font-bold mb-3 sm:mb-4 text-[var(--accent)]">Your Goals</h3>
           {goals.length > 0 ? (
             <div className="space-y-3">
               {goals.map((goal) => (
                 <Link 
                   key={goal._id.toString()} 
                   href={`/goals/${goal._id.toString()}`}
-                  className="block p-3 rounded-lg hover:bg-neutral-50 transition-colors border-l-4 font-body"
+                  className="block p-3 rounded-lg transition-colors border-l-4 font-body hover:bg-[var(--accent)] hover:bg-opacity-5"
                   style={{ borderLeftColor: goal.color }}
                 >
-                  <h4 className="font-medium text-white">{goal.title}</h4>
+                  <h4 className="font-medium text-text-primary">{goal.title}</h4>
                   {goal.description && (
-                    <p className="text-sm text-medium-gray mt-1 line-clamp-2">{goal.description}</p>
+                    <p className="text-sm text-text-secondary mt-1 line-clamp-2">{goal.description}</p>
                   )}
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="text-center py-6 sm:py-8 text-medium-gray font-body">
+            <div className="text-center py-6 sm:py-8 text-text-secondary font-body">
               <p>You don't have any goals yet.</p>
-              <Link href="/goals/new" className="text-peach hover:underline mt-2 inline-block">
+              <Link href="/goals/new" className="text-[var(--accent)] hover:underline mt-2 inline-block">
                 Create your first goal
               </Link>
             </div>
@@ -89,15 +89,15 @@ export default async function Dashboard() {
         </div>
       </div>
       
-      <div className="card mb-6 sm:mb-8 p-3 sm:p-4 border-t-4 border-t-brown overflow-x-auto">
-        <h3 className="text-lg sm:text-xl font-heading font-bold mb-2 text-peach">Your Progress Heatmaps</h3>
-        <p className="text-xs text-medium-gray mb-3 font-body">Yearly progress for all your goals</p>
+      <div className="card mb-6 sm:mb-8 p-3 sm:p-4 border-t-4 border-t-[var(--accent)] overflow-x-auto">
+        <h3 className="text-lg sm:text-xl font-heading font-bold mb-2 text-[var(--accent)]">Your Progress Heatmaps</h3>
+        <p className="text-xs text-text-secondary mb-3 font-body">Yearly progress for all your goals</p>
         {goals.length > 0 ? (
           <div className="min-w-[600px]">
             <DashboardHeatmaps goals={plainGoals} />
           </div>
         ) : (
-          <div className="text-center py-6 text-medium-gray font-body">
+          <div className="text-center py-6 text-text-secondary font-body">
             <p>Your progress heatmaps will appear here once you start tracking goals.</p>
           </div>
         )}
