@@ -4,7 +4,6 @@ import { SignInButton, SignedIn, SignedOut, useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import Image from 'next/image';
 
 // Feature card component
 const FeatureCard = ({ icon, title, onClick }) => (
@@ -46,22 +45,8 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-6 relative">
-      {/* Logo */}
-      <div className="flex items-center gap-2 mb-12">
-        <div className="w-8 h-8 relative float-animation">
-          <Image 
-            src="/paper-plane.svg" 
-            alt="OneStep Logo" 
-            width={32} 
-            height={32}
-            className="object-contain text-[var(--accent)]"
-          />
-        </div>
-        <span className="font-mono text-lg">OneStep</span>
-      </div>
-
       {/* Main Content */}
-      <div className="max-w-4xl w-full text-center">
+      <div className="max-w-4xl w-full text-center -mt-20">
         <h1 className="text-5xl sm:text-7xl font-display font-bold mb-6 leading-tight">
           Track Your Goals
           <br />
