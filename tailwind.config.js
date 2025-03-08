@@ -10,10 +10,19 @@ module.exports = {
       fontFamily: {
         serif: ['Charter', 'Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
         sans: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
-        display: ['Playfair Display', 'Georgia', 'serif'],
+        display: ['Space_Grotesk', 'sans-serif'],
+        mono: ['Space_Mono', 'monospace'],
         body: ['Inter', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
       },
       colors: {
+        accent: {
+          DEFAULT: 'var(--accent)',
+          light: 'var(--accent-light)',
+          dark: 'var(--accent-dark)',
+        },
+        background: 'var(--background)',
+        'text-primary': 'var(--text-primary)',
+        'text-secondary': 'var(--text-secondary)',
         'navy': 'var(--navy)',
         'dark-gray': 'var(--dark-gray)',
         'medium-gray': 'var(--medium-gray)',

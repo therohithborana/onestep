@@ -8,25 +8,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Color palette from the image */
-  --navy: #111822;
-  --dark-gray: #333740;
-  --medium-gray: #6C6A6A;
-  --brown: #4F362A;
-  --taupe: #745850;
-  --peach: #F3B699;
-  
-  /* Dark theme variables */
-  --foreground-rgb: 255, 255, 255;
-  --background-rgb: 17, 24, 34; /* Navy */
-  --card-bg: #1a2433; /* Slightly lighter than navy */
-  --card-border: #2a3545; /* Even lighter for borders */
+  /* Light mode colors */
+  --background: #ffffff;
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --accent: #8b5cf6;
+  --accent-light: #a78bfa;
+  --accent-dark: #6d28d9;
+  --grid-color: rgba(139, 92, 246, 0.05);
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+}
+
+[data-theme='dark'] {
+  /* Dark mode colors */
+  --background: #0f0f0f;
+  --text-primary: #ffffff;
+  --text-secondary: #a3a3a3;
+  --accent: #8b5cf6;
+  --accent-light: #a78bfa;
+  --accent-dark: #6d28d9;
+  --grid-color: rgba(139, 92, 246, 0.05);
+  --card-bg: #1a1a1a;
+  --card-border: #2a2a2a;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: 'Space Mono', monospace;
+  background-image: 
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: center center;
 }
 
 /* Only home page uses Playfair Display for headings */
@@ -98,41 +113,20 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Button styles */
 .btn {
-  @apply px-4 py-2 rounded-md font-medium transition-colors;
+  @apply px-6 py-3 rounded-lg transition-all duration-200 font-mono text-sm;
 }
 
 .btn-primary {
-  background-color: var(--peach);
-  color: var(--navy);
-}
-
-.btn-primary:hover {
-  background-color: #e5a989;
+  @apply bg-accent text-background hover:opacity-90;
 }
 
 .btn-secondary {
-  background-color: var(--dark-gray);
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: #444b54;
-}
-
-.btn-accent {
-  background-color: var(--peach);
-  color: var(--navy);
-}
-
-.btn-accent:hover {
-  background-color: #e5a989;
+  @apply bg-transparent border border-text-secondary text-text-primary hover:bg-white hover:bg-opacity-10;
 }
 
 /* Card styles */
 .card {
-  @apply rounded-lg shadow-md p-6 border;
-  background-color: var(--card-bg);
-  border-color: var(--card-border);
+  @apply bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl p-6 transition-all duration-200;
 }
 
 /* Dashboard heatmap styles */
@@ -202,7 +196,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Typography enhancements */
 .font-display {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 .font-body {
@@ -270,4 +264,48 @@ a {
 
 a:hover {
   color: #e5a989;
+}
+
+/* Typography */
+.font-mono {
+  font-family: 'Space Mono', monospace;
+}
+
+/* Feature Card */
+.feature-card {
+  @apply p-4 rounded-xl transition-all duration-200 hover:scale-105 cursor-pointer bg-[var(--card-bg)] border border-[var(--card-border)];
+}
+
+/* Icon styles */
+.icon {
+  @apply w-6 h-6 text-[var(--accent)];
+}
+
+/* Animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }
