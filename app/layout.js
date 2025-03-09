@@ -15,8 +15,8 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata = {
-  title: 'OneStep - AI-Powered Education',
-  description: 'Enhance your education with OneStep\'s AI-Powered learning platform',
+  title: 'OneStep - Ek kadam lakshya ki taraf',
+ 
 };
 
 export default function RootLayout({ children }) {
