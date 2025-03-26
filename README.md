@@ -4,6 +4,8 @@ OneStep is a web application that helps you build consistency by tracking your d
 
 ![{E1869BC5-BD17-4DD7-BFF9-9D2AD6AACA76}](https://github.com/user-attachments/assets/3c3a28c3-8e64-496e-8d77-4c8697741913)
 
+Try Now: https://onestep-azure.vercel.app/
+
 ## Features
 
 - **Goal Tracking**: Create and manage your personal goals
