@@ -2,6 +2,8 @@
 
 OneStep is a web application that helps you build consistency by tracking your daily progress toward your goals. With beautiful heatmap visualizations, you can see your progress at a glance and stay motivated.
 
+![{E1869BC5-BD17-4DD7-BFF9-9D2AD6AACA76}](https://github.com/user-attachments/assets/3c3a28c3-8e64-496e-8d77-4c8697741913)
+
 ## Features
 
 - **Goal Tracking**: Create and manage your personal goals
